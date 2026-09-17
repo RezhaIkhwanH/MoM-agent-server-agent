@@ -1,94 +1,136 @@
-# Agent Notetaker MOM 📝
+# Agent Notetaker MOM - Server API 📝
 
-Agent Notetaker MOM adalah sebuah aplikasi berbasis AI yang dirancang untuk secara otomatis mengubah transkrip atau catatan rapat mentah menjadi dokumen Notulen Rapat (Minutes of Meeting - MOM) yang terstruktur dan profesional dalam bahasa Indonesia.
+> [!IMPORTANT]
+> Repositori ini hanya berisi **kode Backend Agent / API** untuk Agent Notetaker MOM. Kode Discord Bot-nya berada pada repositori terpisah.
+>
+> - **Bot MOM Repo**: [Bot MoM](https://github.com/RezhaIkhwanH/MOM-agent-bot-discord)
 
-Proyek ini dibangun menggunakan **FastAPI**, **Langchain**, **Langserve**, dan menggunakan model dari **Groq** untuk menghasilkan ringkasan dan poin-poin rapat dengan cepat dan akurat. Proyek ini juga terintegrasi dengan **MLflow** untuk pelacakan eksperimen (experiment tracking).
+**Agent Notetaker MOM Server** adalah aplikasi backend berbasis AI yang dirancang untuk secara otomatis mengubah transkrip atau catatan rapat mentah menjadi dokumen Notulen Rapat (*Minutes of Meeting* - MOM) yang terstruktur, jelas, dan profesional dalam Bahasa Indonesia.
+
+Proyek ini dibangun menggunakan **FastAPI**, **LangChain**, **LangServe**, dan model dari **Groq** untuk menghasilkan ringkasan dan poin-poin rapat secara instan. Proyek ini juga terintegrasi dengan **MLflow** untuk pelacakan eksperimen (*experiment tracking*).
+
+---
 
 ## Fitur Utama ✨
+
 - **Otomatisasi MOM**: Mengonversi transkrip mentah menjadi format MOM standar (Detail Rapat, Poin Diskusi, Keputusan, Action Items, dan Langkah Selanjutnya).
-- **Bahasa Indonesia**: Dikonfigurasi secara khusus (melalui *system prompt*) untuk menghasilkan notulensi dalam bahasa Indonesia yang formal.
-- **REST API**: Menyediakan endpoint API yang mudah diakses menggunakan FastAPI dan Langserve.
-- **Experiment Tracking**: Terintegrasi dengan MLflow untuk melacak setiap pemanggilan (run) dan melihat hasilnya secara rapi.
-- **Fast Inference**: Menggunakan Groq API (ChatGroq) untuk inferensi LLM yang sangat cepat.
+- **Bahasa Indonesia**: System prompt dikonfigurasi secara khusus untuk menghasilkan notulensi formal dalam Bahasa Indonesia.
+- **REST API & LangServe**: Menyediakan endpoint API `/agent_MOM` yang dapat diakses dengan mudah oleh client (seperti Discord Bot, Web Application, dll).
+- **Interactive Playground & Swagger UI**: Built-in LangServe Playground di `/agent_MOM/playground` serta dokumentasi Swagger di `/docs`.
+- **Experiment Tracking**: Terintegrasi dengan **MLflow** untuk melacak setiap eksekusi agent (*runs*), prompt, dan output.
+- **Fast Inference**: Menggunakan **Groq API** (`ChatGroq`) untuk eksekusi LLM yang cepat.
+
+---
 
 ## Prasyarat 🛠️
-Sebelum menjalankan proyek ini, pastikan Anda telah menginstal beberapa alat berikut:
-- Python 3.9+
-- MLflow (berjalan di background)
-- Akun dan API Key dari Groq
+
+Sebelum menjalankan server ini, pastikan Anda telah menyiapkan:
+- **Python 3.13+** (atau Python 3.9+)
+- Package Manager: [`uv`](https://github.com/astral-sh/uv) (direkomendasikan) atau `pip`
+- **Groq API Key** (Dapatkan di [Groq Console](https://console.groq.com/))
+- **MLflow Server** (Opsional, untuk tracking eksperimen)
+
+---
 
 ## Instalasi 💻
 
 1. **Clone repositori ini:**
-   `ash
-   git clone https://github.com/username-anda/agent-notetaker-mom.git
-   cd agent-notetaker-mom
-   `
+   ```bash
+   git clone https://github.com/Farras-AI/Agent-MOM.git
+   cd Agent-MOM
+   ```
 
-2. **Buat Virtual Environment (opsional namun disarankan):**
-   `ash
-   python -m venv venv
-   # Untuk Windows:
-   venv\Scripts\activate
-   # Untuk Linux/Mac:
-   source venv/bin/activate
-   `
+2. **Buat & Aktifkan Virtual Environment:**
+   - **Menggunakan `uv` (Direkomendasikan):**
+     ```bash
+     uv venv
+     # Windows:
+     .venv\Scripts\activate
+     # Linux/macOS:
+     source .venv/bin/activate
+     ```
+   - **Menggunakan standard `venv`:**
+     ```bash
+     python -m venv .venv
+     # Windows:
+     .venv\Scripts\activate
+     # Linux/macOS:
+     source .venv/bin/activate
+     ```
 
-3. **Instal dependensi:**
-   Pastikan Anda memiliki file equirements.txt (atau instal library secara manual):
-   `ash
-   pip install fastapi uvicorn langchain langchain-groq langserve pydantic python-dotenv mlflow
-   `
+3. **Instal Dependensi:**
+   - **Dengan `uv`:**
+     ```bash
+     uv sync
+     ```
+   - **Dengan `pip`:**
+     ```bash
+     pip install fastapi uvicorn langchain langchain-groq langserve pydantic python-dotenv mlflow
+     ```
 
 4. **Konfigurasi Environment Variables:**
-   Buat file .env di direktori utama (root) proyek Anda dan tambahkan Groq API Key Anda:
-   `nv
+   Buat file `.env` di root direktori proyek dan tambahkan Groq API Key Anda:
+   ```env
    GROQ_API_KEY=your_groq_api_key_here
-   `
+   ```
+
+---
 
 ## Cara Penggunaan 🚀
 
-### 1. Menjalankan Server MLflow (Untuk Tracking)
-Proyek ini mengarah ke MLflow di http://localhost:5000. Buka terminal baru dan jalankan:
-`ash
+### 1. Menjalankan Server MLflow (Opsional)
+Server backend dikonfigurasi untuk mengirim log tracking ke MLflow di `http://localhost:5000`. Buka terminal baru dan jalankan:
+```bash
 mlflow server --host 127.0.0.1 --port 5000
-`
+```
 
-### 2. Menjalankan Agent Secara Lokal (Testing Script)
-Jika Anda hanya ingin mencoba agent menggunakan file teks (mom_test.txt), Anda bisa langsung menjalankan file gent.py:
-`ash
-python agent.py
-`
-*Pastikan Anda telah membuat file mom_test.txt berisi transkrip rapat di folder yang sama. Hasilnya akan disimpan di folder esult/MOM_result.txt.*
-
-### 3. Menjalankan REST API Server
-Untuk menjalankan API server FastAPI dengan Langserve, gunakan Uvicorn:
-`ash
+### 2. Menjalankan Server REST API (FastAPI + LangServe)
+Jalankan server API menggunakan Uvicorn:
+```bash
 uvicorn main:app --reload
-`
-API akan berjalan di: http://localhost:8000
+```
+Server akan berjalan di `http://localhost:8000`.
 
-Anda bisa mengakses:
-- **Health Check**: http://localhost:8000/health
-- **Langserve API Endpoint**: http://localhost:8000/agent_MOM
-- **Playground (UI bawaan Langserve)**: http://localhost:8000/agent_MOM/playground
-- **Dokumentasi API Swagger**: http://localhost:8000/docs
+Anda dapat mengakses:
+- **Health Check**: [http://localhost:8000/health](http://localhost:8000/health)
+- **LangServe API Endpoint**: `http://localhost:8000/agent_MOM`
+- **LangServe Playground (UI)**: [http://localhost:8000/agent_MOM/playground](http://localhost:8000/agent_MOM/playground)
+- **Dokumentasi API Swagger**: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+### 3. Testing Agent secara Lokal (Script Test)
+Jika ingin menguji agent menggunakan file teks transkrip rapat (`mom_test.txt`):
+```bash
+python agent.py
+```
+*Hasil notulen rapat akan tersimpan secara otomatis di `result/MOM_result.txt`.*
+
+Atau Anda juga dapat menguji pemanggilan HTTP ke server menggunakan:
+```bash
+python testClient.py
+```
+
+---
 
 ## Struktur Proyek 📂
 
-`	ext
+```text
 .
-├── main.py          # Entry point aplikasi FastAPI dan setup Langserve
-├── agent.py         # Logika utama Langchain agent, prompt, dan integrasi Groq/MLflow
-├── testClient.py    # (Opsional) Script untuk melakukan testing pemanggilan API
-├── mom_test.txt     # (Opsional) File teks mentah berisi contoh transkrip rapat
-├── .env             # File environment (tidak masuk ke version control)
-└── README.md        # Dokumentasi ini
-`
+├── main.py          # Entry point FastAPI & registrasi rute LangServe
+├── agent.py         # Logika utama LangChain agent, system prompt, integrasi Groq & MLflow
+├── testClient.py    # Script pengujian pemanggilan HTTP client ke server
+├── pyproject.toml   # Konfigurasi dependensi proyek Python
+├── uv.lock          # Lockfile dependensi (uv package manager)
+├── .env             # File environment variable (GROQ_API_KEY, dll)
+├── result/          # Folder output hasil pengujian lokal
+└── README.md        # Dokumentasi repositori ini
+```
+
+---
 
 ## Teknologi yang Digunakan 🔧
-- [FastAPI](https://fastapi.tiangolo.com/)
-- [LangChain](https://www.langchain.com/)
-- [LangServe](https://python.langchain.com/docs/langserve)
-- [Groq](https://groq.com/) (LLM Provider)
-- [MLflow](https://mlflow.org/) (Experiment Tracking)
+
+- [FastAPI](https://fastapi.tiangolo.com/) - High-performance web framework for APIs
+- [LangChain](https://www.langchain.com/) - Framework for LLM applications
+- [LangServe](https://python.langchain.com/docs/langserve) - Deploy LangChain runnables and chains as REST APIs
+- [Groq](https://groq.com/) - Ultra-fast LLM Inference Engine
+- [MLflow](https://mlflow.org/) - Open source platform for the machine learning lifecycle
