@@ -5,9 +5,9 @@
 >
 > - **Bot MOM Repo**: [Bot MoM](https://github.com/RezhaIkhwanH/MOM-agent-bot-discord)
 
-**Agent Notetaker MOM Server** adalah aplikasi backend berbasis AI yang dirancang untuk secara otomatis mengubah transkrip atau catatan rapat mentah menjadi dokumen Notulen Rapat (*Minutes of Meeting* - MOM) yang terstruktur, jelas, dan profesional dalam Bahasa Indonesia.
+**Agent Notetaker MOM Server** adalah aplikasi backend berbasis AI yang dirancang untuk secara otomatis mengubah transkrip atau catatan rapat mentah menjadi dokumen Notulen Rapat (_Minutes of Meeting_ - MOM) yang terstruktur, jelas, dan profesional dalam Bahasa Indonesia.
 
-Proyek ini dibangun menggunakan **FastAPI**, **LangChain**, **LangServe**, dan model dari **Groq** untuk menghasilkan ringkasan dan poin-poin rapat secara instan. Proyek ini juga terintegrasi dengan **MLflow** untuk pelacakan eksperimen (*experiment tracking*).
+Proyek ini dibangun menggunakan **FastAPI**, **LangChain**, **LangServe**, dan model dari **Groq** untuk menghasilkan ringkasan dan poin-poin rapat secara instan. Proyek ini juga terintegrasi dengan **MLflow** untuk pelacakan eksperimen (_experiment tracking_).
 
 ---
 
@@ -17,7 +17,7 @@ Proyek ini dibangun menggunakan **FastAPI**, **LangChain**, **LangServe**, dan m
 - **Bahasa Indonesia**: System prompt dikonfigurasi secara khusus untuk menghasilkan notulensi formal dalam Bahasa Indonesia.
 - **REST API & LangServe**: Menyediakan endpoint API `/agent_MOM` yang dapat diakses dengan mudah oleh client (seperti Discord Bot, Web Application, dll).
 - **Interactive Playground & Swagger UI**: Built-in LangServe Playground di `/agent_MOM/playground` serta dokumentasi Swagger di `/docs`.
-- **Experiment Tracking**: Terintegrasi dengan **MLflow** untuk melacak setiap eksekusi agent (*runs*), prompt, dan output.
+- **Experiment Tracking**: Terintegrasi dengan **MLflow** untuk melacak setiap eksekusi agent (_runs_), prompt, dan output.
 - **Fast Inference**: Menggunakan **Groq API** (`ChatGroq`) untuk eksekusi LLM yang cepat.
 
 ---
@@ -25,6 +25,7 @@ Proyek ini dibangun menggunakan **FastAPI**, **LangChain**, **LangServe**, dan m
 ## Prasyarat 🛠️
 
 Sebelum menjalankan server ini, pastikan Anda telah menyiapkan:
+
 - **Python 3.13+** (atau Python 3.9+)
 - Package Manager: [`uv`](https://github.com/astral-sh/uv) (direkomendasikan) atau `pip`
 - **Groq API Key** (Dapatkan di [Groq Console](https://console.groq.com/))
@@ -35,6 +36,7 @@ Sebelum menjalankan server ini, pastikan Anda telah menyiapkan:
 ## Instalasi 💻
 
 1. **Clone repositori ini:**
+
    ```bash
    git clone https://github.com/Farras-AI/Agent-MOM.git
    cd Agent-MOM
@@ -79,32 +81,42 @@ Sebelum menjalankan server ini, pastikan Anda telah menyiapkan:
 ## Cara Penggunaan 🚀
 
 ### 1. Menjalankan Server MLflow (Opsional)
+
 Server backend dikonfigurasi untuk mengirim log tracking ke MLflow di `http://localhost:5000`. Buka terminal baru dan jalankan:
+
 ```bash
 mlflow server --host 127.0.0.1 --port 5000
 ```
 
 ### 2. Menjalankan Server REST API (FastAPI + LangServe)
+
 Jalankan server API menggunakan Uvicorn:
+
 ```bash
 uvicorn main:app --reload
 ```
+
 Server akan berjalan di `http://localhost:8000`.
 
 Anda dapat mengakses:
+
 - **Health Check**: [http://localhost:8000/health](http://localhost:8000/health)
 - **LangServe API Endpoint**: `http://localhost:8000/agent_MOM`
 - **LangServe Playground (UI)**: [http://localhost:8000/agent_MOM/playground](http://localhost:8000/agent_MOM/playground)
 - **Dokumentasi API Swagger**: [http://localhost:8000/docs](http://localhost:8000/docs)
 
 ### 3. Testing Agent secara Lokal (Script Test)
+
 Jika ingin menguji agent menggunakan file teks transkrip rapat (`mom_test.txt`):
+
 ```bash
 python agent.py
 ```
-*Hasil notulen rapat akan tersimpan secara otomatis di `result/MOM_result.txt`.*
+
+_Hasil notulen rapat akan tersimpan secara otomatis di `result/MOM_result.txt`._
 
 Atau Anda juga dapat menguji pemanggilan HTTP ke server menggunakan:
+
 ```bash
 python testClient.py
 ```
